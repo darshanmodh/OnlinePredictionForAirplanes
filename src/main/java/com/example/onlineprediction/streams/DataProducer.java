@@ -1,6 +1,7 @@
 package com.example.onlineprediction.streams;
 
 import com.example.onlineprediction.data.DataLoader;
+import com.example.onlineprediction.ml.ModelBuilder;
 import org.apache.kafka.clients.producer.KafkaProducer;
 import org.apache.kafka.clients.producer.Producer;
 import org.apache.kafka.clients.producer.ProducerRecord;
@@ -16,6 +17,7 @@ import java.util.Properties;
 public class DataProducer {
 
     private static final Logger LOG = LoggerFactory.getLogger(DataProducer.class);
+    private static final String PATH = "src/main/resources/flights.csv";
 
     public static void main(String[] args) throws InterruptedException, IOException {
         if(args.length > 0) {
@@ -56,7 +58,9 @@ public class DataProducer {
     }
 
     private static void populateGlobalKTable() {
-        //TODO: GlobalKTable Mode
+        LOG.info("Building the model.");
+
+        Map<String, List<String>> model = ModelBuilder.train(PATH);
     }
 
     public static Producer<String,String> getDataProducer() {
