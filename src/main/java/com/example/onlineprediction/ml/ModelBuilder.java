@@ -7,6 +7,8 @@ import org.apache.mahout.classifier.sgd.OnlineLogisticRegression;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.ByteArrayOutputStream;
+import java.io.DataOutputStream;
 import java.io.IOException;
 import java.security.SecureRandom;
 import java.util.*;
@@ -18,6 +20,7 @@ public class ModelBuilder {
     private static final double TRAINING_PERCENTAGE = 0.40;
     private static final Logger LOG = LoggerFactory.getLogger(ModelBuilder.class);
     private static final String PATH = "src/main/resources/flights.csv";
+    private static final String INCOMING_FILEPATH = "src/main/resources/august_2017.csv";
 
     public static void main(String[] args) throws IOException {
         LOG.info("Training Now. Called from command line.");
@@ -93,4 +96,20 @@ public class ModelBuilder {
         return sample;
     }
 
+    // called from DataProducer
+    public static Map<String,byte[]> buildModel(String path) throws IOException {
+        Map<String, byte[]> coefficientMap = new HashMap<>();
+        Map<String, OnlineLogisticRegression> airlineData = train(path);
+        for(Map.Entry<String, OnlineLogisticRegression> regressionEntry : airlineData.entrySet()) {
+            coefficientMap.put(regressionEntry.getKey(), getBytesFromOnlineRegression(regressionEntry.getValue()));
+        }
+        return coefficientMap;
+    }
+
+    private static byte[] getBytesFromOnlineRegression(OnlineLogisticRegression logisticRegression) throws IOException {
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        DataOutputStream dos = new DataOutputStream(baos);
+        logisticRegression.write(dos);
+        return baos.toByteArray();
+    }
 }

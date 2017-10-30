@@ -57,10 +57,23 @@ public class DataProducer {
         producer.close();
     }
 
-    private static void populateGlobalKTable() {
+    private static void populateGlobalKTable() throws IOException {
         LOG.info("Building the model.");
+        Map<String, byte[]> model = ModelBuilder.buildModel(PATH);
+        LOG.info("Model built, populating topic with for GlobalKTable with {}", model);
 
-        Map<String, List<String>> model = ModelBuilder.train(PATH);
+        Producer<String, byte[]> producer = getGlobalKTableProducer();
+        for(Map.Entry<String, byte[]> entry : model.entrySet()) {
+            ProducerRecord<String, byte[]> record = new ProducerRecord<>("onlineRegression-by-airport", entry.getKey(), entry.getValue());
+            producer.send(record);
+        }
+        LOG.info("Done publishing to topic.");
+        producer.close();
+    }
+
+    public static Producer<String,byte[]> getGlobalKTableProducer() {
+        Properties props = getProps("org.apache.kafka.common.serialization.ByteArraySerialization");
+        return new KafkaProducer<String, byte[]>(props);
     }
 
     public static Producer<String,String> getDataProducer() {
@@ -75,4 +88,5 @@ public class DataProducer {
         props.put("value.serialization", valueSerialization);
         return props;
     }
+
 }
