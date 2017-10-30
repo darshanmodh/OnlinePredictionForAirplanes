@@ -29,6 +29,8 @@ public class ModelBuilder {
 
         final Map<String, List<String>> sample = getRandomSampling(data);
 
+        final List<FlightData> flightData = new ArrayList<>();
+
         // TODO: train the data
 
         return regressionMap;
