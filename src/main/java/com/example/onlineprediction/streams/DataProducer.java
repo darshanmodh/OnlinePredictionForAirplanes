@@ -72,20 +72,20 @@ public class DataProducer {
     }
 
     public static Producer<String,byte[]> getGlobalKTableProducer() {
-        Properties props = getProps("org.apache.kafka.common.serialization.ByteArraySerialization");
+        Properties props = getProps("org.apache.kafka.common.serialization.ByteArraySerializer");
         return new KafkaProducer<String, byte[]>(props);
     }
 
     public static Producer<String,String> getDataProducer() {
-        Properties props = getProps("org.apache.kafka.common.serialization.StringSerialization");
+        Properties props = getProps("org.apache.kafka.common.serialization.StringSerializer");
         return new KafkaProducer<String, String>(props);
     }
 
     private static Properties getProps(String valueSerialization) {
         Properties props = new Properties();
         props.put("bootstrap.servers", "localhost:9092");
-        props.put("key.serializer", "org.apache.kafka.common.serialization.StringSerialization");
-        props.put("value.serialization", valueSerialization);
+        props.put("key.serializer", "org.apache.kafka.common.serialization.StringSerializer");
+        props.put("value.serializer", valueSerialization);
         return props;
     }
 

@@ -112,4 +112,13 @@ public class ModelBuilder {
         logisticRegression.write(dos);
         return baos.toByteArray();
     }
+
+    //    train(flightList)
+    //    called from PredictorProcessor
+    public static byte[] train(List<String> flightList) throws IOException {
+        List<FlightData> allFlightData = new ArrayList<>();
+        for(String flight : flightList)
+            allFlightData.add(new FlightData(flight));
+        return getBytesFromOnlineRegression(onlineRegression(allFlightData));
+    }
 }
